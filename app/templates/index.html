@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+    <h1 class="fw-bold fs-2 m-0"><i class="bi bi-stars text-warning me-2"></i>探索佳餚</h1>
+    
+    <form class="d-flex flex-grow-1" action="{{ url_for('recipes.index') }}" method="GET" style="max-width: 400px;">
+        <div class="input-group">
+            <span class="input-group-text bg-transparent border-end-0 border-secondary"><i class="bi bi-search text-muted"></i></span>
+            <input class="form-control border-start-0 ps-0" type="search" name="q" placeholder="尋找記憶中的味道..." value="{{ search_query }}">
+            <button class="btn btn-outline-info" type="submit">搜尋</button>
+        </div>
+    </form>
+</div>
+
+{% if recipes %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for r in recipes %}
+    <div class="col">
+        <div class="card h-100 recipe-card hover-lift p-1">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title fw-bold fs-4 mb-0 text-truncate text-info">{{ r.title }}</h5>
+                    <form action="{{ url_for('recipes.toggle_favorite', recipe_id=r.id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-link p-0 text-decoration-none" style="outline: none; box-shadow: none;">
+                            {% if r.is_favorite == 1 %}
+                                <i class="bi bi-heart-fill text-danger fs-4 drop-shadow"></i>
+                            {% else %}
+                                <i class="bi bi-heart text-secondary fs-4"></i>
+                            {% endif %}
+                        </button>
+                    </form>
+                </div>
+                
+                <h6 class="text-muted small fw-bold mt-3 mb-2"><i class="bi bi-basket me-1"></i> 主要食材：</h6>
+                <!-- 將多行文字第一行的內容擷取截斷，讓卡片整齊 -->
+                <p class="card-text opacity-75" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.95rem;">
+                    {{ r.ingredients }}
+                </p>
+            </div>
+            
+            <div class="card-footer bg-transparent border-0 text-end pb-3 pt-0">
+                <a href="{{ url_for('recipes.view_recipe', recipe_id=r.id) }}" class="btn btn-outline-light btn-sm btn-modern rounded-pill px-3">
+                    查看步驟 <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<!-- 無資料時的情境顯示 -->
+<div class="text-center py-5 mt-5">
+    <i class="bi bi-journal-x text-muted mb-3" style="font-size: 5rem; opacity: 0.5;"></i>
+    <h3 class="mt-3 text-white">這裡怎麼空空的？</h3>
+    
+    {% if search_query %}
+    <p class="text-muted mt-2 fs-5">找不到符合 " <span class="text-info">{{ search_query }}</span> " 的食譜結果。</p>
+    <a href="{{ url_for('recipes.index') }}" class="btn btn-outline-secondary mt-3 rounded-pill px-4">清除搜尋條件</a>
+    {% else %}
+    <p class="text-muted mt-2 fs-5">從來沒有建立紀錄，快來記下你的第一道招牌菜吧！</p>
+    <a href="{{ url_for('recipes.create_recipe_form') }}" class="btn btn-primary-custom btn-modern mt-3 px-4 py-2 fs-5">
+        立刻新增食譜 <i class="bi bi-pencil-square ms-1"></i>
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

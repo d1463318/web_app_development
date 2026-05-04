@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="recipe-card p-4 p-md-5 mx-auto mt-2 shadow-lg" style="max-width: 650px;">
+    {% if action == 'create' %}
+        <h2 class="fw-bold mb-4 text-center"><i class="bi bi-journal-plus text-info fs-1 d-block mb-2"></i>建立新食譜</h2>
+    {% else %}
+        <h2 class="fw-bold mb-4 text-center"><i class="bi bi-journal-text text-warning fs-1 d-block mb-2"></i>修改食譜內容</h2>
+    {% endif %}
+
+    <form action="{{ url_for('recipes.create_recipe') if action == 'create' else url_for('recipes.update_recipe', recipe_id=recipe.get('id', 0)) }}" method="POST">
+        
+        <!-- 標題 -->
+        <div class="mb-4">
+            <label for="title" class="form-label fw-bold text-info">菜色標題 <span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-lg fw-bold" id="title" name="title" value="{{ recipe.get('title', '') }}" placeholder="例如：阿嬤的私房紅燒肉" required autofocus>
+        </div>
+
+        <!-- 材枓 -->
+        <div class="mb-4">
+            <label for="ingredients" class="form-label fw-bold text-info">準備材料 <span class="text-danger">*</span></label>
+            <textarea class="form-control fs-5" id="ingredients" name="ingredients" rows="4" placeholder="豬五花 300g&#10;醬油 2大匙&#10;冰糖 1小匙..." required>{{ recipe.get('ingredients', '') }}</textarea>
+            <div class="form-text text-muted mt-2"><i class="bi bi-info-circle me-1"></i>小秘訣：直接換行來區隔每一種食材即可！</div>
+        </div>
+
+        <!-- 步驟 -->
+        <div class="mb-5">
+            <label for="steps" class="form-label fw-bold text-info">料理步驟 <span class="text-danger">*</span></label>
+            <textarea class="form-control fs-5" id="steps" name="steps" rows="6" placeholder="1. 豬五花切塊川燙備用。&#10;2. 熱鍋下少許油，放入碎冰糖炒出焦糖色。&#10;3. 加入薑片與肉塊拌炒均勻..." required>{{ recipe.get('steps', '') }}</textarea>
+        </div>
+
+        <!-- 送出列 -->
+        <div class="d-flex justify-content-between align-items-center border-top pt-4" style="border-color: rgba(255,255,255,0.1) !important;">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-modern rounded-pill px-4">
+                <i class="bi bi-x-lg pe-1"></i> 取消
+            </a>
+            <button type="submit" class="btn btn-primary-custom btn-modern rounded-pill px-5 py-2 fs-5">
+                {% if action == 'create' %}
+                    <i class="bi bi-check-lg pe-1"></i> 立即發佈
+                {% else %}
+                    <i class="bi bi-save pe-1"></i> 儲存變更
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

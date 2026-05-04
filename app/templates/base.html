@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>食譜收藏夾 | Premium Recipes</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-bg: #0f172a;
+            --surface-bg: rgba(30, 41, 59, 0.7);
+            --accent-color: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, var(--primary-bg));
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism Navbar */
+        .navbar-custom {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Card stylings */
+        .recipe-card {
+            background: var(--surface-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .recipe-card.hover-lift:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow);
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        /* Buttons Styling */
+        .btn-modern {
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            border: none;
+            color: white;
+        }
+        
+        .btn-primary-custom:hover {
+            background: linear-gradient(135deg, #38bdf8, #3b82f6);
+            box-shadow: 0 0 15px var(--accent-glow);
+            color: white;
+        }
+
+        /* Flash message animations */
+        .alert {
+            animation: slideDown 0.4s ease-out forwards;
+            border-radius: 10px;
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Enhance forms for dark mode */
+        .form-control {
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            border-radius: 8px;
+        }
+        .form-control:focus {
+            background-color: rgba(15, 23, 42, 0.8);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.25rem var(--accent-glow);
+            color: #fff;
+        }
+        .form-control::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('recipes.index') }}">
+                <i class="bi bi-book-half text-info me-2"></i>食譜收藏夾
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('recipes.index') }}">全部料理清單</a>
+                    </li>
+                </ul>
+                <a href="{{ url_for('recipes.create_recipe_form') }}" class="btn btn-primary-custom btn-modern">
+                    <i class="bi bi-plus-lg me-1"></i> 新增紀錄
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4 mb-5">
+        <!-- Flash messages render block -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <!-- Flask flash 預設的 error 改成 bootstrap 的 danger -->
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show shadow-sm" role="alert">
+                        {% if category == 'success' %}<i class="bi bi-check-circle-fill me-2"></i>{% endif %}
+                        {% if category == 'danger' or category == 'error' %}<i class="bi bi-exclamation-triangle-fill me-2"></i>{% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Child templates will inject their content here -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

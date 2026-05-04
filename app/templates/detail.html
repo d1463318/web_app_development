@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="recipe-card p-4 mx-auto shadow-lg" style="max-width: 900px; border-top: 4px solid var(--accent-color);">
+    <!-- 頭部標題區 -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-4 mb-4" style="border-color: rgba(255,255,255,0.1) !important;">
+        <div>
+            <h1 class="fw-bold text-white mb-2">{{ recipe.get('title') }}</h1>
+            <small class="text-muted"><i class="bi bi-clock me-1"></i> 建立時間：{{ recipe.get('created_at') }}</small>
+        </div>
+        
+        <div class="d-flex gap-2 align-items-center mt-3 mt-md-0">
+            <form action="{{ url_for('recipes.toggle_favorite', recipe_id=recipe.get('id')) }}" method="POST" class="m-0">
+                <button type="submit" class="btn btn-modern {% if recipe.get('is_favorite') == 1 %}btn-danger{% else %}btn-outline-danger{% endif %}" title="切換收藏狀態">
+                    <i class="bi bi-heart-fill me-1"></i> {% if recipe.get('is_favorite') == 1 %}已收藏{% else %}收藏{% endif %}
+                </button>
+            </form>
+            <a href="{{ url_for('recipes.edit_recipe_form', recipe_id=recipe.get('id')) }}" class="btn btn-warning btn-modern text-dark">
+                <i class="bi bi-pencil-square me-1"></i> 編輯
+            </a>
+        </div>
+    </div>
+
+    <!-- 內容區 -->
+    <div class="row g-4">
+        <!-- 左側材料 -->
+        <div class="col-md-5">
+            <div class="p-4 rounded-4 h-100 shadow-sm" style="background: rgba(0,0,0,0.25);">
+                <h4 class="fw-bold mb-3 d-flex align-items-center border-bottom pb-2" style="border-color: rgba(255,255,255,0.05) !important;">
+                    <i class="bi bi-list-check fs-3 text-warning me-2"></i> 所需材料
+                </h4>
+                <div class="fs-5" style="white-space: pre-wrap; line-height: 1.8;">{{ recipe.get('ingredients') }}</div>
+            </div>
+        </div>
+        
+        <!-- 右側步驟 -->
+        <div class="col-md-7">
+            <div class="p-4 rounded-4 h-100 shadow-sm" style="background: rgba(0,0,0,0.25);">
+                <h4 class="fw-bold mb-3 d-flex align-items-center border-bottom pb-2" style="border-color: rgba(255,255,255,0.05) !important;">
+                    <i class="bi bi-fire fs-3 text-danger me-2"></i> 料理步驟
+                </h4>
+                <div class="fs-5" style="white-space: pre-wrap; line-height: 1.8;">{{ recipe.get('steps') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 尾部操作區 -->
+    <div class="d-flex justify-content-between align-items-center border-top pt-4 mt-5" style="border-color: rgba(255,255,255,0.1) !important;">
+        <a href="{{ url_for('recipes.index') }}" class="btn btn-outline-secondary btn-modern rounded-pill">
+            <i class="bi bi-arrow-left"></i> 返回總覽
+        </a>
+        
+        <!-- 刪除按鈕 (含再次確認提醒) -->
+        <form action="{{ url_for('recipes.delete_recipe', recipe_id=recipe.get('id')) }}" method="POST" onsubmit="return confirm('確定要把這道食譜連根拔起從資料庫刪除嗎？\n⚠️ 這個操作無法復原喔！');">
+            <button type="submit" class="btn btn-link link-danger text-decoration-none btn-sm fw-bold">
+                <i class="bi bi-trash3-fill"></i> 刪除此食譜
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
